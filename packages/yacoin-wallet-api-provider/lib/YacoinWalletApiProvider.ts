@@ -40,7 +40,7 @@ export default class YacoinWalletApiProvider extends YacoinWalletProvider(
     return this.request('wallet_signMessage', message, address)
   }
 
-  async signTx(hash: Buffer, derivationPath: string) {
+  async signTx(hash: string, derivationPath: string) {
     return this.request('wallet_signTx', hash, derivationPath)
   }
 
