@@ -132,7 +132,11 @@ export default class YacoinJsWalletProvider extends YacoinWalletProvider(
   }
 
   async signTx(hash: Buffer, derivationPath: string) {
+    console.log("TACA ===> YacoinJsWalletProvider.ts, signTx, hash = ", hash)
+    console.log("TACA ===> YacoinJsWalletProvider.ts, signTx, derivationPath = ", derivationPath)
+    console.log("TACA ===> YacoinJsWalletProvider.ts, signTx calling keyPair")
     const keyPair = await this.keyPair(derivationPath)
+    console.log("TACA ===> YacoinJsWalletProvider.ts, signTx calling sign")
     return keyPair.sign(hash)
   }
 
