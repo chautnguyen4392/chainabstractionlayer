@@ -288,7 +288,8 @@ export default class YacoinSwapProvider extends Provider implements Partial<Swap
 
     const hex = tx.toHex()
     console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, calling sendRawTransaction for tx = ", hex)
-    await this.getMethod('sendRawTransaction')(hex)
+    const result = await this.getMethod('sendRawTransaction')(hex)
+    console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, result = ", result)
     return normalizeTransactionObject(decodeRawTransaction(hex, this._network), txfee)
   }
 
