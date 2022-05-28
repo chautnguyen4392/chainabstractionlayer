@@ -206,7 +206,6 @@ export default class YacoinSwapProvider extends Provider implements Partial<Swap
     }
 
     // BEGIN CHANGE
-    const keyPair = ECPair.fromWIF('XN43ZNu2EBzcZGLAdEnyFNsNTBqMh3PGSFHdVoSM9VdbM3HmZh1S', network)
     const hashType = TransactionYacoinJs.SIGHASH_ALL
     const redeemScript = paymentVariant.redeem.output
     console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, redeemScript = ", redeemScript)
@@ -214,54 +213,15 @@ export default class YacoinSwapProvider extends Provider implements Partial<Swap
     console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, swapVout.n = ", swapVout.n)
     console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, address = ", address)
 
-    var txb = new TransactionBuilder(network)
     var tx = new TransactionYacoinJs()
 
-    // BEGIN TESTING 1
-    if (!isClaim) {
-      txb.setLockTime(expiration)
-      tx.locktime = expiration
-    }
-    // Note: nSequence MUST be <= 0xfffffffe otherwise LockTime is ignored, and is immediately spendable.
-    txb.addInput(initiationTxHash, swapVout.n, 0)
-    txb.addOutput(address, swapValue - txfee)
-    console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, Test 1, txb = ", txb)
-
-    const txbTest = txb.buildIncomplete()
-    console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, Test 1, Incomplete txbTest = ", txbTest)
-    let signatureHash = txbTest.hashForSignature(0, redeemScript, hashType)
-    console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, Test 1, signatureHash = ", signatureHash)
-    console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, Test 1, BEGIN SIGNING = ")
-    try {
-      const signedSignatureHash = keyPair.sign(signatureHash)
-      console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, Test 1, signedSignatureHash = ", signedSignatureHash)
-    } catch (error) {
-      console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, Test 1, error = ", error)
-    }
-    console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, Test 1, END SIGNING, tx hex = ", txbTest.toHex())
-    // END TESTING 1
-
-    // BEGIN TESTING 2
     tx.addInput(Buffer.from(initiationTxHash, 'hex').reverse(), swapVout.n, 0)
     tx.addOutput(AddressYacoinJs.toOutputScript(address, network), swapValue - txfee)
-    console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, Test 2, tx = ", tx)
-    signatureHash = tx.hashForSignature(0, redeemScript, hashType)
-    console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, Test 2, signatureHash = ", signatureHash)
-    const strBuffer = signatureHash.toString('hex')
-    console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, Test 2, signatureHash to string = ", strBuffer)
-    const convertBuffer = Buffer.from(strBuffer, 'hex')
-    console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, Test 2, reconvert to buffer = ", convertBuffer)
+    console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, tx = ", tx)
+    let signatureHash = tx.hashForSignature(0, redeemScript, hashType)
+    console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, signatureHash = ", signatureHash)
+    console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, unsigned tx hex = ", tx.toHex())
 
-    console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, Test 2, BEGIN SIGNING = ")
-    try {
-      const signedSignatureHash = keyPair.sign(signatureHash)
-      console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, Test 2, signedSignatureHash = ", signedSignatureHash)
-    } catch (error) {
-      console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, Test 2, error = ", error)
-    }
-    console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, Test 2, END SIGNING, tx hex = ", tx.toHex())
-    // END TESTING 2
-    
     // Sign transaction
     console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, address = ", address)
     const walletAddress: Address = await this.getMethod('getWalletAddress')(address)
@@ -287,7 +247,7 @@ export default class YacoinSwapProvider extends Provider implements Partial<Swap
     // END CHANGE
 
     const hex = tx.toHex()
-    console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, calling sendRawTransaction for tx = ", hex)
+    console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, calling sendRawTransaction for signed tx = ", hex)
     const result = await this.getMethod('sendRawTransaction')(`data=${hex}`)
     console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, result = ", result)
     return normalizeTransactionObject(decodeRawTransaction(hex, this._network), txfee)
