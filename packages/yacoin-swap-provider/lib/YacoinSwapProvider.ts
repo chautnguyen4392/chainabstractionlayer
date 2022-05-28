@@ -17,7 +17,7 @@ import {
 } from '@liquality/utils'
 import { YacoinNetwork } from '@liquality/yacoin-networks'
 
-import { Transaction as TransactionYacoinJs, TransactionBuilder, script as bScript, address as AddressYacoinJs, payments, ECPair } from 'yacoinjs-lib'
+import { Transaction as TransactionYacoinJs, script as bScript, address as AddressYacoinJs, payments } from 'yacoinjs-lib'
 
 interface YacoinSwapProviderOptions {
   network: YacoinNetwork
