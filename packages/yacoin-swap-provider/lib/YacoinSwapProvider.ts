@@ -226,7 +226,7 @@ export default class YacoinSwapProvider extends Provider implements Partial<Swap
     console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, address = ", address)
     const walletAddress: Address = await this.getMethod('getWalletAddress')(address)
     console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, calling signTx, signatureHash = ", signatureHash)
-    const signedSignatureHash = await this.getMethod('signTx')(signatureHash.toString('hex'), walletAddress.derivationPath)
+    const signedSignatureHash = await this.getMethod('signTx')(tx.toHex(), signatureHash.toString('hex'), walletAddress.derivationPath, txfee)
     console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, signedSignatureHash = ", signedSignatureHash)
     const swapInput = this.getSwapInput(
       bScript.signature.encode(Buffer.from(signedSignatureHash, 'hex'), hashType),
