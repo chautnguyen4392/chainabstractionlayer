@@ -215,6 +215,9 @@ export default class YacoinSwapProvider extends Provider implements Partial<Swap
 
     var tx = new TransactionYacoinJs()
 
+    if (!isClaim) {
+      tx.locktime = expiration
+    }
     tx.addInput(Buffer.from(initiationTxHash, 'hex').reverse(), swapVout.n, 0)
     tx.addOutput(AddressYacoinJs.toOutputScript(address, network), swapValue - txfee)
     console.log("TACA ===> YacoinSwapProvider.ts, _redeemSwapOutput, tx = ", tx)
